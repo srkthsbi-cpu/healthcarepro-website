@@ -36,8 +36,6 @@ function homePage() {
   const categoryCards = nav.categories.map(C.categoryCard).join("");
 
   const body = `
-  ${banners()}
-
   <section class="hero">
     <div class="container hero__grid">
       <div>
@@ -51,7 +49,7 @@ function homePage() {
           <a class="btn btn--ghost-light" href="/iletisim/">İletişime Geç</a>
         </div>
       </div>
-      <div class="hero__art">${heroArt()}${C.obesityCenterBadge("obesity-center-badge--hero")}</div>
+      <div class="hero__art">${banners()}</div>
     </div>
   </section>
 

@@ -20,6 +20,7 @@ function serviceBanner(slide) {
   return `<article class="service-banner" data-service-banner data-category="${slide.key}" data-href="${slide.href}" tabindex="0" aria-label="${slide.title} hizmetleri">
     <div class="service-banner__glow" aria-hidden="true"></div>
     <div class="container service-banner__inner">
+      <div class="service-banner__art">${visual(slide.kind)}</div>
       <div class="service-banner__copy">
         <span class="service-banner__eyebrow">Health Care Pro · ${slide.eyebrow}</span>
         <h2>${slide.title}</h2>
@@ -30,7 +31,6 @@ function serviceBanner(slide) {
           <button class="service-banner__pause" type="button" data-banner-pause aria-label="Banner otomatik geçişini durdur">Duraklat</button>
         </div>
       </div>
-      <div class="service-banner__art">${visual(slide.kind)}</div>
     </div>
   </article>`;
 }
