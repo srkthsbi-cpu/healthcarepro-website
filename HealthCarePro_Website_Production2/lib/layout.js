@@ -165,7 +165,7 @@ function desktopNav(activeTop) {
 
 function mobileNav() {
   return `
-  <div class="mobile-menu" data-mobile-menu>
+  <div class="mobile-menu" data-mobile-menu aria-hidden="true">
     <div class="mobile-menu__overlay" data-menu-overlay></div>
     <div class="mobile-menu__panel" role="dialog" aria-modal="true" aria-label="Mobil menü">
       <div class="mobile-menu__top">
@@ -344,6 +344,7 @@ function page({
 ${schemaScripts(schemas)}
 </head>
 <body>
+<div class="page-transition" data-page-transition aria-hidden="true"><span class="page-transition__line"></span></div>
 <a class="skip-link" href="#main">İçeriğe geç</a>
 ${header(activeTop)}
 <main id="main">

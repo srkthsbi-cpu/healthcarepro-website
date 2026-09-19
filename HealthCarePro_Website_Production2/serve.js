@@ -1,7 +1,7 @@
 /*
  * Zero-dependency static file server for local preview.
  * Usage: node serve.js  (then open http://localhost:8080)
- * This is for LOCAL PREVIEW only - production hosting is Cloudflare Pages,
+ * This is for LOCAL PREVIEW only - production hosting is Cloudflare Workers Static Assets,
  * which serves the dist/ folder directly (see README.md).
  */
 const http = require("http");

@@ -7,6 +7,7 @@ const L = require("./lib/layout.js");
 const C = require("./lib/components.js");
 const { esc, ul, canonical } = require("./lib/util.js");
 const { heroArt } = require("./lib/art.js");
+const { banners } = require("./lib/banner.js");
 const faqGeneral = require("./data/faq.js");
 
 const OUT = path.join(__dirname, "dist");
@@ -35,6 +36,8 @@ function homePage() {
   const categoryCards = nav.categories.map(C.categoryCard).join("");
 
   const body = `
+  ${banners()}
+
   <section class="hero">
     <div class="container hero__grid">
       <div>
@@ -915,7 +918,7 @@ function buildManifest() {
 }
 
 function buildHeadersFile() {
-  // Cloudflare Pages _headers file: security headers for every route
+  // Cloudflare Workers Static Assets _headers file: security headers for every route
   write(
     "_headers",
     `/*

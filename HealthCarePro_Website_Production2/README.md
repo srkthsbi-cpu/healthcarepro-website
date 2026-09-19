@@ -19,7 +19,7 @@ HTML/CSS/JS dosyalarından oluşan bir `dist/` klasörüdür.
 8. [Form Backend Entegrasyonu](#form-backend-entegrasyonu)
 9. [SEO: Sitemap, Robots, Canonical, Schema](#seo-sitemap-robots-canonical-schema)
 10. [Güvenlik Ayarları](#güvenlik-ayarları)
-11. [Cloudflare Workers Deployment](#cloudflare-pages-deployment)
+11. [Cloudflare Workers Deployment](#cloudflare-workers-deployment)
 12. [Custom Domain Bağlama](#custom-domain-bağlama)
 13. [QA / Test Süreci](#qa--test-süreci)
 14. [Bilinen Sınırlamalar ve Eksik Bilgiler](#bilinen-sınırlamalar-ve-eksik-bilgiler)
