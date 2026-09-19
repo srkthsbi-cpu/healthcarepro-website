@@ -1,0 +1,16 @@
+{
+  "name": "healthcarepro-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Health Care Pro (HCP) - production-ready static marketing & information website.",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "node generate.js",
+    "qa": "node qa-check.js && node html-lint.js",
+    "dev": "npm run build && node serve.js",
+    "serve": "node serve.js"
+  },
+  "dependencies": {}
+}
