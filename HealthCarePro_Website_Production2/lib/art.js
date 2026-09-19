@@ -1,6 +1,6 @@
 function heroArt() {
   return `
-  <svg viewBox="0 0 520 460" width="100%" height="auto" role="img" aria-label="Sağlık teknolojisi temalı soyut illüstrasyon">
+  <svg class="hero-art-svg" viewBox="0 0 520 460" width="100%" height="auto" role="img" aria-label="Sağlık teknolojisi temalı soyut illüstrasyon">
     <defs>
       <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0%" stop-color="#16b8c4"/>

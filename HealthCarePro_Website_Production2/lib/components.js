@@ -18,6 +18,13 @@ function faqAccordion(items) {
   </div>`;
 }
 
+
+function obesityCenterBadge(className = "") {
+  return `<div class="obesity-center-badge ${className}">
+    <img src="/assets/img/obezite-cerrahi-merkezi-amblem.png" alt="Sağlık Bakanlığı Yetkili Obezite Cerrahi Merkezi" width="360" height="360" loading="lazy">
+  </div>`;
+}
+
 function serviceCard(service) {
   return `<div class="card card--service">
     <h3><a href="${nav.serviceUrl(service)}">${esc(service.title)}</a></h3>
@@ -166,6 +173,7 @@ function articleBody(article) {
 
 module.exports = {
   faqAccordion,
+  obesityCenterBadge,
   serviceCard,
   categoryCard,
   infoCategoryCard,

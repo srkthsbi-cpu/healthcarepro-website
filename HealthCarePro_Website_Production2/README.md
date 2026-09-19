@@ -2,7 +2,7 @@
 
 Production-ready, statik (build sonrası sunucu tarafı bağımlılığı olmayan) çok sayfalı web sitesi.
 Next.js/React yerine **bağımlılıksız (zero-dependency) bir Node.js statik site üreteci** kullanıldı — bkz.
-["Neden bu mimari?"](#neden-bu-mimari) bölümü. Sonuç, Cloudflare Pages'e doğrudan yüklenebilecek saf
+["Neden bu mimari?"](#neden-bu-mimari) bölümü. Sonuç, Cloudflare Workers Static Assets'e doğrudan yüklenebilecek saf
 HTML/CSS/JS dosyalarından oluşan bir `dist/` klasörüdür.
 
 ---
@@ -19,7 +19,7 @@ HTML/CSS/JS dosyalarından oluşan bir `dist/` klasörüdür.
 8. [Form Backend Entegrasyonu](#form-backend-entegrasyonu)
 9. [SEO: Sitemap, Robots, Canonical, Schema](#seo-sitemap-robots-canonical-schema)
 10. [Güvenlik Ayarları](#güvenlik-ayarları)
-11. [Cloudflare Pages Deployment](#cloudflare-pages-deployment)
+11. [Cloudflare Workers Deployment](#cloudflare-pages-deployment)
 12. [Custom Domain Bağlama](#custom-domain-bağlama)
 13. [QA / Test Süreci](#qa--test-süreci)
 14. [Bilinen Sınırlamalar ve Eksik Bilgiler](#bilinen-sınırlamalar-ve-eksik-bilgiler)
@@ -46,7 +46,7 @@ npm run qa
 ```
 
 `dist/` klasörü **üretilen** çıktıdır ve doğrudan bu haliyle herhangi bir statik barındırma servisine
-(Cloudflare Pages, Netlify, Vercel static, S3, vb.) yüklenebilir.
+(Cloudflare Workers Static Assets, Netlify, Vercel static, S3, vb.) yüklenebilir.
 
 ---
 
@@ -81,11 +81,11 @@ npm run qa
 ├── html-lint.js            # HTML etiket dengesi (açık/kapalı tag) kontrolü
 ├── package.json
 │
-└── dist/                   # ÜRETİLEN ÇIKTI (build sonrası oluşur) — Cloudflare Pages'e bu yüklenir
+└── dist/                   # ÜRETİLEN ÇIKTI (build sonrası oluşur) — Cloudflare Workers Static Assets'e bu yüklenir
     ├── index.html, hakkimizda/, hizmetler/, bilgi-merkezi/, sss/, iletisim/, ...
     ├── assets/
     ├── sitemap.xml, robots.txt, site.webmanifest, favicon.ico
-    └── _headers, _redirects   # Cloudflare Pages'e özel yapılandırma dosyaları
+    └── _headers, _redirects   # Cloudflare Workers Static Assets'e özel yapılandırma dosyaları
 ```
 
 **Önemli:** `dist/` klasörünü elle düzenlemeyin — her `npm run build` çalıştırıldığında tamamen
@@ -104,7 +104,7 @@ yerine, dışarıdan hiçbir pakete ihtiyaç duymayan bir yapı tercih edildi:
 - **Veri/şablon ayrımı korundu:** Brief'in 26-27. maddelerinde istenen "hizmetleri component içine
   hard-code etmek yerine merkezi veri yapısında tutma" hedefi `data/services.js`, `data/articles.js` gibi
   dosyalarla birebir karşılanıyor — sadece React yerine düz JavaScript obje dizileri kullanılıyor.
-- **Cloudflare Pages ile tam uyum:** Çıktı saf statik HTML/CSS/JS olduğundan build adımı Cloudflare
+- **Cloudflare Workers Static Assets ile tam uyum:** Çıktı saf statik HTML/CSS/JS olduğundan build adımı Cloudflare
   Pages tarafında da tek komut (`node generate.js`) ile çalışır, sunucu tarafı runtime gerektirmez.
 - İsterseniz ileride bu veri dosyalarını değiştirmeden bir Next.js/React projesine taşımak mümkündür;
   `data/*.js` dosyaları zaten çerçeve-bağımsız düz veridir.
@@ -171,27 +171,32 @@ tüm CTA'lar otomatik güncellenir.
 
 ## Form Backend Entegrasyonu
 
-İletişim formu (`/iletisim/`) şu anda **frontend doğrulaması tamamlanmış ama gerçek bir backend'e bağlı
-olmayan** durumdadır — brief'in 13. maddesindeki talimata uygun olarak sahte bir "başarıyla gönderildi"
-mesajı göstermez; bunun yerine WhatsApp/e-posta ile ulaşma seçeneği sunar.
+İletişim formu (`/iletisim/`) **Web3Forms** (https://web3forms.com) üzerinden çalışır. Access Key
+`data/site.js` içinde yapılandırılmıştır. Web3Forms, Access Key'in istemci tarafında kullanılabildiğini
+belirtmektedir.
 
-Gerçek bir backend'e bağlamak için:
+### Mevcut durum
 
-1. Bir form-alma servisi kurun (örnekler: kendi yazacağınız bir Cloudflare Worker, Formspree,
-   Basin, veya herhangi bir e-posta/CRM API'si). Servis, JSON body kabul eden bir POST endpoint
-   sağlamalıdır.
-2. `data/site.js` içindeki `contactEndpoint: null` satırını gerçek URL ile değiştirin:
-   ```js
-   contactEndpoint: "https://your-worker.example.workers.dev/contact",
-   ```
-3. **Önemli — CSP güncellemesi:** `generate.js` içindeki `buildHeadersFile()` fonksiyonunda üretilen
-   `_headers` dosyasındaki `Content-Security-Policy` başlığında `connect-src 'self'` tanımlıdır. Endpoint
-   farklı bir alan adındaysa (`api.example.com` gibi) bu satırı
-   `connect-src 'self' https://api.example.com;` şeklinde güncellemeniz gerekir, aksi hâlde tarayıcı
-   isteği güvenlik politikası gereği engeller.
-4. `npm run build` çalıştırın. `assets/js/main.js` içindeki form mantığı, `window.HCP_CONTACT_ENDPOINT`
-   tanımlı olduğunda otomatik olarak `fetch()` ile JSON POST gönderir ve başarı/hata mesajlarını
-   yönetir (bkz. `assets/js/main.js` → `data-contact-form` bölümü).
+Form için Web3Forms Access Key yapılandırılmıştır. Ziyaretçi formu doldurup gönderdiğinde site,
+Web3Forms API'sine tarayıcı üzerinden JSON POST gönderir ve sonucu sayfa üzerinde başarı/hata mesajıyla
+gösterir. Gönderim sırasında buton "Gönderiliyor..." durumuna geçer.
+
+Spam azaltmak için Web3Forms'un önerdiği gizli `botcheck` alanı kullanılmaktadır. Ek bir captcha etkin
+olmadığı durumda bu alan yalnızca ek bir spam azaltma katmanıdır; mutlak spam engelleme garantisi değildir.
+
+### Teknik detaylar (isteğe bağlı okuma):
+
+- `data/site.js` içindeki `contactEndpoint` alanı Web3Forms'un API adresine (`https://api.web3forms.com/submit`)
+  sabitlenmiştir; bunu değiştirmenize gerek yoktur.
+- **CSP güncellemesi zaten yapılmıştır:** `dist/_headers` dosyasındaki `Content-Security-Policy` başlığında
+  `connect-src` içine `https://api.web3forms.com` zaten eklidir. Web3Forms yerine başka bir servis
+  kullanmak isterseniz, `generate.js` içindeki `buildHeadersFile()` fonksiyonunda bu adresi kendi
+  servisinizin alan adıyla değiştirmeniz gerekir.
+- `assets/js/main.js` içindeki form mantığı, `window.HCP_WEB3FORMS_KEY` tanımlı olduğunda otomatik
+  olarak `fetch()` ile Web3Forms'a JSON POST gönderir ve başarı/hata mesajlarını yönetir (bkz.
+  `assets/js/main.js` → `data-contact-form` bölümü). Web3Forms yerine farklı bir servis
+  (Formspree, kendi Cloudflare Worker'ınız vb.) kullanmak isterseniz bu bölümdeki `fetch()` çağrısını
+  o servisin beklediği formata göre uyarlamanız gerekir.
 
 ---
 
@@ -204,7 +209,7 @@ Gerçek bir backend'e bağlamak için:
 - **canonical**: Her sayfada `<link rel="canonical">` otomatik eklenir (`lib/util.js` → `canonical()`).
   Domain tekilleştirmesi (www/non-www, trailing slash) `data/site.js` içindeki tek `domain` değeri ve
   tüm URL'lerin sonunda `/` kullanılmasıyla sağlanır (madde 36). www/non-www ve zorunlu HTTPS yönlendirmesi
-  Cloudflare Pages/DNS seviyesinde ayarlanmalıdır (bkz. [Custom Domain Bağlama](#custom-domain-bağlama)).
+  Cloudflare Workers Static Assets/DNS seviyesinde ayarlanmalıdır (bkz. [Custom Domain Bağlama](#custom-domain-bağlama)).
 - **Open Graph / Twitter Card**: Her sayfada otomatik (`lib/layout.js` → `page()`).
 - **Structured data (JSON-LD)**: `Organization` ve `WebSite` şeması ana sayfada; her sayfada
   `BreadcrumbList`; SSS içeren sayfalarda `FAQPage`; Bilgi Merkezi yazılarında `Article`. Yalnızca
@@ -216,7 +221,7 @@ Gerçek bir backend'e bağlamak için:
 
 ## Güvenlik Ayarları
 
-`dist/_headers` dosyası (Cloudflare Pages tarafından otomatik okunur) şu başlıkları tüm sayfalara uygular:
+`dist/_headers` dosyası (Cloudflare Workers Static Assets tarafından otomatik okunur) şu başlıkları tüm sayfalara uygular:
 
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
@@ -239,19 +244,20 @@ Ek notlar:
 
 ---
 
-## Cloudflare Pages Deployment
+## Cloudflare Workers Deployment
 
-1. Bu depoyu (ZIP içeriğini) bir Git deposuna yükleyin (GitHub/GitLab) **veya** Cloudflare Pages'in
+1. Bu depoyu (ZIP içeriğini) bir Git deposuna yükleyin (GitHub/GitLab) **veya** Cloudflare Workers Static Assets'in
    "Doğrudan Yükleme" (Direct Upload) seçeneğini kullanın.
 2. **Git tabanlı deploy için:**
-   - Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git.
+   - Cloudflare Dashboard → Workers → Create → Connect to Git.
+   - Bu proje `wrangler.jsonc` içindeki `assets.directory: ./dist` ayarıyla statik çıktıyı Workers Static Assets olarak yayınlar.
    - **Build command:** `node generate.js`
    - **Build output directory:** `dist`
-   - **Node.js version:** 18 veya üzeri (Cloudflare Pages ayarlarında `NODE_VERSION` ortam değişkeni
+   - **Node.js version:** 18 veya üzeri (Cloudflare Workers Static Assets ayarlarında `NODE_VERSION` ortam değişkeni
      ile belirtebilirsiniz, örn. `18`).
    - Ortam değişkeni gerekmez (proje sıfır bağımlılıklıdır).
 3. **Doğrudan yükleme için:** Önce yerelde `npm run build` çalıştırın, ardından yalnızca **`dist/`
-   klasörünün içeriğini** (klasörün kendisini değil, içindekileri) Cloudflare Pages'in
+   klasörünün içeriğini** (klasörün kendisini değil, içindekileri) Cloudflare Workers Static Assets'in
    "Upload assets" ekranına sürükleyin.
 4. Deploy sonrası Cloudflare otomatik olarak `dist/_headers` ve `dist/_redirects` dosyalarını okuyup
    uygular; ek bir yapılandırma gerekmez.
@@ -260,17 +266,17 @@ Ek notlar:
 
 ## Custom Domain Bağlama
 
-1. Cloudflare Pages projenizde **Custom domains** sekmesine gidin ve `healthcarepro.com.tr` alan adını
+1. Cloudflare Workers Static Assets projenizde **Custom domains** sekmesine gidin ve `healthcarepro.com.tr` alan adını
    ekleyin.
 2. Alan adınızın DNS yönetimi Cloudflare'de ise, önerilen CNAME/A kaydı otomatik olarak eklenir.
    Değilse, Cloudflare'in verdiği CNAME kaydını mevcut DNS sağlayıcınıza (alan adını satın aldığınız
    yer) ekleyin.
 3. **www / non-www:** `data/site.js` içindeki `domain` değeri `https://healthcarepro.com.tr` (non-www)
    olarak ayarlanmıştır; tüm canonical/sitemap/OG URL'leri bununla tutarlıdır. `www.healthcarepro.com.tr`
-   üzerinden gelen trafiği non-www'a yönlendirmek için Cloudflare Pages'in "Custom domains" ekranında
+   üzerinden gelen trafiği non-www'a yönlendirmek için Cloudflare Workers Static Assets'in "Custom domains" ekranında
    hem `healthcarepro.com.tr` hem `www.healthcarepro.com.tr` ekleyip, www için bir "Redirect Rule"
    (301, non-www hedefe) tanımlayın.
-4. HTTPS, Cloudflare Pages'te varsayılan olarak zorunludur (otomatik SSL sertifikası).
+4. HTTPS, Cloudflare Workers Static Assets'te varsayılan olarak zorunludur (otomatik SSL sertifikası).
 
 ---
 
@@ -308,14 +314,13 @@ Brief'te açıkça belirtildiği gibi hastane isimleri, doktor isimleri, hasta y
 fiyatlar ve sertifikalar **verilmediği için bunlar uydurulmamıştır**. Aşağıdaki yerler gerçek bilgilerle
 doldurulmayı beklemektedir:
 
-- **`/kvkk/` sayfası:** `[ŞİRKET/KURUM UNVANI GİRİNİZ]` ve güncelleme tarihi placeholder olarak
-  bırakılmıştır — gerçek tüzel kişilik unvanı ve MERSİS bilgisi eklenmelidir.
+- **`/kvkk/` sayfası:** Site üzerinde kullanılan marka adı "Health Care Pro (HCP)" ve iletişim bilgileri
+tanımlıdır. Gerçek tüzel kişilik/MERSİS bilgileri ayrıca sağlanırsa yasal metne eklenmelidir.
 - **Hizmet bölgesi / hastane isimleri:** Sitede yalnızca "İstanbul Avrupa Yakası'nda, anlaşmalı özel
   hastanelerde hizmet." ifadesi kullanılmıştır; hastane isimleri paylaşılmadığı için eklenmemiştir.
-- **İletişim formu backend'i:** Varsayılan olarak bağlı değildir (bkz.
-  [Form Backend Entegrasyonu](#form-backend-entegrasyonu)).
-- **Gizlilik Politikası / Kullanım Koşulları:** Genel şablon niteliğindedir; nihai yayın öncesi bir hukuk
-  danışmanı tarafından gözden geçirilmesi önerilir (bu, sitenin kendisinde de belirtilmiştir).
+- **İletişim formu backend'i:** Web3Forms ile bağlıdır ve Access Key yapılandırılmıştır.
+- **Gizlilik Politikası / Kullanım Koşulları:** Kullanıcıya görünen geliştirici/şablon notları kaldırılmıştır.
+  Gerçek tüzel kişilik bilgileri değişirse ilgili yasal metinler de buna göre güncellenmelidir.
 - **Toplam hizmet sayısı:** Brief'in 5. maddesinde "27 hizmet sayfası" belirtilmiş, ancak 4. bölümdeki
   menü yapısında tek tek listelenen alt hizmetler toplamda **28** adettir (Genel Cerrahi 8 + Proktoloji 4
   + Gastroenteroloji 5 + Varis 2 + Obezite/Metabolik Cerrahi 8 + Diğer 1). Hiçbir hizmet atlanmamış,
@@ -327,7 +332,7 @@ doldurulmayı beklemektedir:
 
 - [ ] `npm run build` hatasız tamamlandı
 - [ ] `npm run qa` tüm kontrollerden geçti (0 kırık link/asset, 0 duplicate, 0 eksik alt)
-- [ ] Cloudflare Pages build log'unda hata yok
+- [ ] Cloudflare Workers build log'unda hata yok
 - [ ] Canlı domain üzerinden ana sayfa, en az 3 hizmet sayfası, en az 2 Bilgi Merkezi yazısı açılıyor
 - [ ] 404 sayfası çalışıyor (`/rastgele-var-olmayan-sayfa/` gibi bir adres deneyin)
 - [ ] Favicon tarayıcı sekmesinde görünüyor
@@ -339,5 +344,5 @@ doldurulmayı beklemektedir:
 - [ ] Arama sayfası (`/arama/`) bir terim yazınca sonuç gösteriyor
 - [ ] `https://healthcarepro.com.tr/sitemap.xml` ve `/robots.txt` canlıda erişilebilir
 - [ ] Google Rich Results Test ile birkaç sayfanın JSON-LD şeması doğrulandı
-- [ ] KVKK sayfasındaki `[ŞİRKET/KURUM UNVANI GİRİNİZ]` gerçek bilgiyle güncellendi
-- [ ] İletişim formu backend'i bağlandıysa gerçek bir test gönderimi yapıldı
+- [ ] KVKK sayfasındaki kurum/tüzel kişilik bilgileri, gerçek resmi bilgiler ayrıca sağlandığında güncellendi
+- [ ] İletişim formundan gerçek bir test gönderimi yapıldı ve `infohealthcp@gmail.com` gelen kutusu kontrol edildi

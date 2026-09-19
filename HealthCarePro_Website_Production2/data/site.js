@@ -16,9 +16,14 @@ module.exports = {
   addressLong:
     "Anlaşmalı hastaneler ve hizmet noktaları hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.",
   year: 2026,
-  // Optional: set to a real endpoint URL (Cloudflare Worker, Formspree, etc.)
-  // to make the contact form actually deliver submissions. Leave as null to
-  // keep the form in "not yet connected" mode. See README.md > "Form Backend
-  // Entegrasyonu".
-  contactEndpoint: null,
+  // Web3Forms (https://web3forms.com) ile form gönderimi:
+  // 1) web3forms.com adresine gidip HCP'nin Gmail adresini (infohealthcp@gmail.com)
+  //    girerek ücretsiz bir "Access Key" alın (e-postanıza gelir).
+  // 2) O anahtarı aşağıya, tırnak içine yapıştırın.
+  // 3) npm run build çalıştırın (veya bu dosyayı GitHub'a yükleyin, Cloudflare
+  //    otomatik yeniden build eder).
+  // Anahtar girilmediği sürece (null kaldığı sürece) form "bağlı değil" moduna
+  // devam eder. Detaylar: README.md > "Form Backend Entegrasyonu".
+  web3formsAccessKey: "cd900213-675d-4349-845b-d4547baade62",
+  contactEndpoint: "https://api.web3forms.com/submit",
 };

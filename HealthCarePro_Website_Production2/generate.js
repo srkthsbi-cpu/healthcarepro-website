@@ -48,7 +48,7 @@ function homePage() {
           <a class="btn btn--ghost-light" href="/iletisim/">İletişime Geç</a>
         </div>
       </div>
-      <div class="hero__art">${heroArt()}</div>
+      <div class="hero__art">${heroArt()}${C.obesityCenterBadge("obesity-center-badge--hero")}</div>
     </div>
   </section>
 
@@ -316,6 +316,7 @@ function serviceCategoryPage(cat) {
       <div class="section-head">
         <h1>${esc(cat.title)}</h1>
         <p>${esc(cat.description)}</p>
+        ${cat.slug === "obezite-ve-metabolik-cerrahi" ? C.obesityCenterBadge("obesity-center-badge--category") : ""}
       </div>
       <div class="cards-grid cards-grid--3">${services.map(C.serviceCard).join("")}</div>
       <div class="disclaimer-box" style="margin-top:32px;">
@@ -358,6 +359,7 @@ function servicePage(service) {
       <div class="content-layout">
         <div class="content-main">
           <span class="badge">${esc(cat.title)}</span>
+          ${cat.slug === "obezite-ve-metabolik-cerrahi" ? C.obesityCenterBadge("obesity-center-badge--service") : ""}
           <h1>${esc(service.title)}</h1>
           <p class="lead" style="color:var(--ink-500);font-size:1.05rem;">${esc(service.shortDescription)}</p>
           ${C.serviceBody(service)}
@@ -443,6 +445,7 @@ function infoCategoryPage(cat) {
       <div class="section-head">
         <h1>${esc(cat.title)}</h1>
         <p>${esc(cat.description)}</p>
+        ${cat.slug === "obezite-ve-metabolik-cerrahi" ? C.obesityCenterBadge("obesity-center-badge--category") : ""}
       </div>
       ${
         articles.length
@@ -596,17 +599,17 @@ function contactPage() {
             <div class="form-grid">
               <div class="field" data-field data-required>
                 <label for="f-name">Ad Soyad</label>
-                <input type="text" id="f-name" name="name" required>
+                <input type="text" id="f-name" name="name" autocomplete="name" required>
                 <span class="field-error">Lütfen adınızı ve soyadınızı girin.</span>
               </div>
               <div class="field" data-field data-required>
                 <label for="f-phone">Telefon</label>
-                <input type="tel" id="f-phone" name="phone" required>
+                <input type="tel" id="f-phone" name="phone" autocomplete="tel" inputmode="tel" required>
                 <span class="field-error">Lütfen geçerli bir telefon numarası girin.</span>
               </div>
               <div class="field field--full" data-field data-required>
                 <label for="f-email">E-posta</label>
-                <input type="email" id="f-email" name="email" required>
+                <input type="email" id="f-email" name="email" autocomplete="email" required>
                 <span class="field-error">Lütfen geçerli bir e-posta adresi girin.</span>
               </div>
               <div class="field field--full" data-field data-required>
@@ -630,10 +633,15 @@ function contactPage() {
                 </div>
                 <span class="field-error">Devam etmek için KVKK onayı gereklidir.</span>
               </div>
+              <input type="checkbox" name="botcheck" id="botcheck" class="botcheck" tabindex="-1" autocomplete="off">
             </div>
-            <button class="btn btn--primary btn--block" type="submit" style="margin-top:18px;">Gönder</button>
-            <p class="form-note">Bu form şu anda bir e-posta/CRM servisine bağlı değildir. Hızlı yanıt için WhatsApp
-            üzerinden ulaşmanızı öneririz. Geliştiriciler için bağlantı talimatları README.md dosyasındadır.</p>
+            <button class="btn btn--primary btn--block form-submit" type="submit" style="margin-top:18px;">Gönder</button>
+            ${
+              site.web3formsAccessKey
+                ? `<p class="form-note">Bu form üzerinden gönderdiğiniz bilgiler tarafımıza iletilir. Hızlı yanıt için WhatsApp üzerinden de ulaşabilirsiniz.</p>`
+                : `<p class="form-note">Bu form şu anda bir e-posta/CRM servisine bağlı değildir. Hızlı yanıt için WhatsApp
+            üzerinden de ulaşabilirsiniz.</p>`
+            }
           </form>
         </div>
       </div>
@@ -724,13 +732,13 @@ function buildLegalPages() {
     slug: "kvkk",
     title: "KVKK Aydınlatma Metni",
     content: `
-    <p><em>Son güncelleme: [GÜNCELLEME TARİHİ GİRİNİZ]</em></p>
+    <p><em>Son güncelleme: Eylül 2026</em></p>
     <p>Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında ${esc(site.siteName)}
     ("Veri Sorumlusu") tarafından işlenen kişisel verileriniz hakkında sizi bilgilendirmek amacıyla hazırlanmıştır.
     Bu metin genel bilgilendirme amaçlıdır ve kesin hukuki danışmanlık niteliği taşımaz; kurumunuza özel KVKK
     uyumluluğu için bir hukuk danışmanına başvurmanızı öneririz.</p>
     <h2>Veri Sorumlusu</h2>
-    <p>[ŞİRKET/KURUM UNVANI GİRİNİZ] — ${esc(site.email)} — ${esc(site.phone)}</p>
+    <p>Health Care Pro (HCP) — ${esc(site.email)} — ${esc(site.phone)}</p>
     <h2>İşlenen Kişisel Veriler</h2>
     <p>İletişim formu, e-posta veya WhatsApp üzerinden bizimle iletişime geçtiğinizde ad-soyad, telefon numarası,
     e-posta adresi ve mesaj içeriğinizde paylaştığınız bilgiler işlenebilir.</p>
@@ -741,8 +749,6 @@ function buildLegalPages() {
     <p>KVKK'nın 11. maddesi kapsamında kişisel verilerinize ilişkin bilgi talep etme, düzeltilmesini veya
     silinmesini isteme gibi haklara sahipsiniz. Bu haklarınızı kullanmak için ${esc(site.email)} adresinden bizimle
     iletişime geçebilirsiniz.</p>
-    <div class="disclaimer-box">[EKSİK KURUMSAL BİLGİLER: Şirket unvanı, MERSİS numarası ve tam adres bilgisi
-    gerçek bilgilerle değiştirilmelidir. Bkz. README.md.]</div>
     `,
   });
 
@@ -754,14 +760,16 @@ function buildLegalPages() {
     kullanırken kişisel verilerinizin nasıl işlendiğine dair genel bilgi vermek amacıyla hazırlanmıştır ve kesin
     hukuki danışmanlık yerine geçmez.</p>
     <h2>Toplanan Bilgiler</h2>
-    <p>İletişim formu aracılığıyla bizimle paylaştığınız ad, telefon, e-posta ve mesaj bilgileri dışında, sitede
-    zorunlu çerezler haricinde kişisel veri toplanmamaktadır.</p>
+    <p>İletişim formu aracılığıyla bizimle paylaştığınız ad, telefon, e-posta ve mesaj bilgileri işlenebilir. Sitede
+    analitik veya pazarlama amacıyla çerez kullanılmamaktadır; form tercihleri gibi temel site ayarları tarayıcı
+    depolamasında tutulabilir.</p>
     <h2>Bilgilerin Kullanımı</h2>
     <p>Paylaştığınız bilgiler yalnızca talebinizi yanıtlamak amacıyla kullanılır ve üçüncü taraflarla
     pazarlama amacıyla paylaşılmaz.</p>
     <h2>Veri Güvenliği</h2>
     <p>Kişisel verilerinizin güvenliği için makul teknik ve idari tedbirler alınmaktadır.</p>
-    <div class="disclaimer-box">[EKSİK BİLGİ: Üçüncü taraf servis kullanımı (analitik, form backend vb.) netleştiğinde bu politika güncellenmelidir.]</div>
+    <h2>İletişim Formu</h2>
+    <p>İletişim formu üzerinden gönderilen bilgiler, talebinizin tarafımıza ulaştırılması amacıyla Web3Forms altyapısı üzerinden işlenebilir.</p>
     `,
   });
 
@@ -769,13 +777,12 @@ function buildLegalPages() {
     slug: "cerez-politikasi",
     title: "Çerez Politikası",
     content: `
-    <p>Bu web sitesi, deneyiminizi iyileştirmek amacıyla çerezler kullanmaktadır.</p>
-    <h2>Zorunlu Çerezler</h2>
-    <p>Sitenin temel işlevlerinin (menü durumu, çerez tercihi hatırlama gibi) çalışması için gerekli olan
-    çerezlerdir ve her zaman aktiftir.</p>
-    <h2>Analitik ve Pazarlama Çerezleri</h2>
-    <p>Zorunlu olmayan analitik veya pazarlama çerezleri yalnızca açık onayınızla etkinleştirilir. Onay
-    vermediğiniz sürece bu tür çerezler kullanılmaz.</p>
+    <p>Bu web sitesinde analitik veya pazarlama amacıyla çerez kullanılmamaktadır. Temel site tercihleri, gerektiğinde
+    tarayıcının yerel depolama alanında tutulabilir.</p>
+    <h2>Temel Site Depolaması</h2>
+    <p>Çerez bildiriminin tercihinizi hatırlaması gibi temel işlevler için tarayıcı yerel depolaması kullanılabilir.</p>
+    <h2>Analitik ve Pazarlama</h2>
+    <p>Bu sitede analitik veya pazarlama çerezleri etkin değildir.</p>
     <h2>Tercihlerinizi Yönetme</h2>
     <p>Çerez tercihlerinizi tarayıcı ayarlarınızdan veya sitemizdeki çerez bildirimi üzerinden yönetebilirsiniz.</p>
     `,
@@ -794,8 +801,6 @@ function buildLegalPages() {
     <h2>Sorumluluk Sınırlaması</h2>
     <p>${esc(site.siteName)}, site içeriğinin kullanımından doğabilecek doğrudan veya dolaylı zararlardan sorumlu
     tutulamaz.</p>
-    <div class="disclaimer-box">[Bu metin genel bir şablondur; kurumunuza özel kullanım koşulları için hukuk
-    danışmanınıza başvurmanızı öneririz.]</div>
     `,
   });
 
@@ -810,9 +815,6 @@ function buildLegalPages() {
     <h2>İçerik Doğruluğu</h2>
     <p>İçeriklerin güncel ve doğru tutulması için özen gösterilmekle birlikte, tıp biliminin gelişen doğası nedeniyle
     ${esc(site.siteName)} bilgilerin eksiksizliğini garanti etmez.</p>
-    <h2>Sahte Bilgi Bulunmadığına Dair Not</h2>
-    <p>Sitede doktor ismi, hastane ismi, hasta yorumu, vaka sayısı veya başarı oranı gibi doğrulanmamış bilgiler yer
-    almamaktadır. Anlaşmalı hastaneler hakkında detaylı bilgi için bizimle iletişime geçebilirsiniz.</p>
     `,
   });
 }
@@ -867,7 +869,8 @@ function buildSiteConfig() {
     "assets/js/site-config.js",
     `window.HCP_WHATSAPP_HREF = ${JSON.stringify(site.whatsappHref)};\n` +
       `window.HCP_EMAIL = ${JSON.stringify(site.email)};\n` +
-      `window.HCP_CONTACT_ENDPOINT = ${JSON.stringify(site.contactEndpoint)};\n`
+      `window.HCP_CONTACT_ENDPOINT = ${JSON.stringify(site.contactEndpoint)};\n` +
+      `window.HCP_WEB3FORMS_KEY = ${JSON.stringify(site.web3formsAccessKey)};\n`
   );
 }
 
@@ -920,7 +923,7 @@ function buildHeadersFile() {
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; script-src-attr 'none'; connect-src 'self' https://api.web3forms.com; frame-src 'none'; object-src 'none'; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
 `
   );
@@ -952,6 +955,7 @@ function copyAssets() {
     "hcp-logo-mark-512.png",
     "hcp-logo-favicon-32.png",
     "hcp-logo-favicon-16.png",
+    "obezite-cerrahi-merkezi-amblem.png",
   ];
   imgFiles.forEach((f) => {
     const full = path.join(imgSrcDir, f);

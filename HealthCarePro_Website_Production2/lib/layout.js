@@ -14,7 +14,8 @@ const ICONS = {
   phone: '<svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
   mail: '<svg viewBox="0 0 24 24" fill="none" width="20" height="20"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   pin: '<svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.5"/></svg>',
-  instagram: '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.06 2 .25 2.5.42a4.4 4.4 0 0 1 1.6 1.05 4.4 4.4 0 0 1 1.05 1.6c.17.5.36 1.3.42 2.5.06 1.3.07 1.7.07 4.9s0 3.6-.07 4.9c-.06 1.2-.25 2-.42 2.5a4.7 4.7 0 0 1-2.65 2.65c-.5.17-1.3.36-2.5.42-1.3.06-1.7.07-4.9.07s-3.6 0-4.9-.07c-1.2-.06-2-.25-2.5-.42a4.4 4.4 0 0 1-1.6-1.05 4.4 4.4 0 0 1-1.05-1.6c-.17-.5-.36-1.3-.42-2.5C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.9c.06-1.2.25-2 .42-2.5A4.4 4.4 0 0 1 3.74 3a4.4 4.4 0 0 1 1.6-1.05c.5-.17 1.3-.36 2.5-.42C9.14 1.47 9.53 1.46 12 1.46zm0 1.8c-3.14 0-3.5 0-4.75.07-1 .05-1.6.22-1.96.36-.5.19-.85.42-1.22.79-.37.37-.6.72-.79 1.22-.14.36-.3.94-.36 1.96C2.85 9.24 2.84 9.6 2.84 12.7c0 0 0 0 0 0"/></svg>',
+  instagram: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.8" r="1.1" fill="currentColor"/></svg>',
+
   facebook: '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H16.7V3.6c-.27-.04-1.2-.12-2.28-.12-2.25 0-3.8 1.37-3.8 3.9v2.5H8v3.1h2.62V21h2.88z"/></svg>',
   tiktok: '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M14.5 2h2.7c.2 1.6 1.2 3 2.8 3.6v2.8a6.6 6.6 0 0 1-3.7-1.2v6.5a5.9 5.9 0 1 1-5.9-5.9c.3 0 .6 0 .9.05v2.8a3.1 3.1 0 1 0 2.2 3V2z"/></svg>',
 };
@@ -92,7 +93,7 @@ function articleSchema({ title, description, url, datePublished }) {
 function schemaScripts(schemas) {
   return schemas
     .filter(Boolean)
-    .map((s) => `<script type="application/ld+json">${JSON.stringify(s)}</script>`)
+    .map((s) => `<script type="application/ld+json">${JSON.stringify(s).replace(/</g, "\u003c")}</script>`)
     .join("\n");
 }
 
@@ -215,7 +216,6 @@ function header(activeTop) {
       </a>
       ${desktopNav(activeTop)}
       <div class="header-actions">
-        <a class="btn btn--whatsapp btn--sm" href="${site.whatsappHref}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp'tan ulaşın">${icon("whatsapp")}<span class="nav-btn-label">WhatsApp</span></a>
         <a class="btn btn--outline btn--sm" href="/iletisim/">İletişim</a>
         <button class="hamburger" data-menu-toggle aria-expanded="false" aria-label="Menüyü aç">
           <span></span><span></span><span></span>
@@ -286,10 +286,10 @@ function footer() {
 function cookieBanner() {
   return `
   <div class="cookie-banner" data-cookie-banner role="dialog" aria-label="Çerez tercihleri">
-    <p>Sitemizde deneyiminizi iyileştirmek için zorunlu çerezler kullanılmaktadır. Zorunlu olmayan analitik/pazarlama çerezleri yalnızca onayınızla etkinleştirilir. Detaylar için <a href="/cerez-politikasi/">Çerez Politikası</a> sayfamızı inceleyebilirsiniz.</p>
+    <p>Sitemiz temel işlevler için tarayıcı depolamasını kullanabilir. Analitik veya pazarlama amaçlı çerezler kullanılmaz. Detaylar için <a href="/cerez-politikasi/">Çerez Politikası</a> sayfamızı inceleyebilirsiniz.</p>
     <div class="cookie-banner__actions">
-      <button class="btn btn--primary btn--sm" data-cookie-accept type="button">Tümünü Kabul Et</button>
-      <button class="btn btn--outline btn--sm" data-cookie-reject type="button">Yalnızca Zorunlu Çerezler</button>
+      <button class="btn btn--primary btn--sm" data-cookie-accept type="button">Anladım</button>
+      <button class="btn btn--outline btn--sm" data-cookie-reject type="button">Kapat</button>
     </div>
   </div>`;
 }
