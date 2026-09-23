@@ -205,7 +205,7 @@ olmadığı durumda bu alan yalnızca ek bir spam azaltma katmanıdır; mutlak s
 - **sitemap.xml**: `generate.js` her sayfa üretildiğinde otomatik olarak `trackUrl()` ile URL listesine
   eklenir; build sonunda `dist/sitemap.xml` olarak yazılır. `/arama/` sayfası ve `404.html` bilinçli
   olarak sitemap'e dahil edilmez (madde 37).
-- **robots.txt**: `dist/robots.txt`, sitemap referansı ve `/arama/` disallow kuralıyla birlikte üretilir.
+- **robots.txt**: `dist/robots.txt`, sitemap referansıyla üretilir; `/arama/` sayfası robots.txt ile engellenmez, kendi `noindex, follow` etiketiyle dizinden hariç tutulur.
 - **canonical**: Her sayfada `<link rel="canonical">` otomatik eklenir (`lib/util.js` → `canonical()`).
   Domain tekilleştirmesi (www/non-www, trailing slash) `data/site.js` içindeki tek `domain` değeri ve
   tüm URL'lerin sonunda `/` kullanılmasıyla sağlanır (madde 36). www/non-www ve zorunlu HTTPS yönlendirmesi

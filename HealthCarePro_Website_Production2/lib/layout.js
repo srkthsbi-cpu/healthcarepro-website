@@ -44,11 +44,6 @@ function websiteSchema() {
     "@type": "WebSite",
     name: site.siteName,
     url: site.domain,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${site.domain}/arama/?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 
@@ -320,7 +315,7 @@ function page({
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${url}">
-<meta name="robots" content="${noindex ? "noindex, nofollow" : "index, follow"}">
+<meta name="robots" content="${noindex ? "noindex, follow" : "index, follow"}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(site.siteName)}">
 <meta property="og:title" content="${esc(title)}">

@@ -697,7 +697,7 @@ function searchPage() {
       schemas: [L.breadcrumbSchema(crumbs)],
     })
   );
-  // Not added to sitemap.xml: this page is noindex and Disallow'd in robots.txt.
+  // Not added to sitemap.xml: this page is intentionally noindex.
 }
 
 /* ===================================================================
@@ -889,7 +889,7 @@ function buildSitemap() {
 function buildRobots() {
   write(
     "robots.txt",
-    `User-agent: *\nAllow: /\nDisallow: /arama/\n\nSitemap: ${site.domain}/sitemap.xml\n`
+    `User-agent: *\nAllow: /\n\nSitemap: ${site.domain}/sitemap.xml\n`
   );
 }
 
